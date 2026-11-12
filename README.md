@@ -101,5 +101,3 @@ node --test cloudflare/test/delivery.test.js
 ## النشر
 
 عيّن `APP_ENV=production` و`APP_DEBUG=false` و`APP_URL=https://...` و`SESSION_SECURE_COOKIE=true`، ثم شغّل `php artisan migrate --force` و`php artisan optimize`. وجّه الويب إلى `public` فقط. لا ترفع `.env` أو قاعدة البيانات أو الأسرار، ولا تفعل تسجيل أجسام طلبات webhook على الـreverse proxy. حدد سياسة احتفاظ بالرسائل ونسخ احتياطي حسب حاجتك؛ الحذف الدوري التلقائي غير مفعّل افتراضيًا.
-
-

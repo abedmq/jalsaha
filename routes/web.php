@@ -13,7 +13,7 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth');
 Route::get('/receive/{token}', [ReceiveController::class, 'show'])->middleware('throttle:60,1');
 Route::post('/receive/{token}/link', [ReceiveController::class, 'acquirePublic'])->middleware('throttle:15,1');
-Route::get('/leases/{lease}', [ReceiveController::class, 'poll'])->middleware('throttle:120,1');
+Route::get('/leases/{lease}', [ReceiveController::class, 'poll'])->middleware('throttle:lease-poll');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [ManagementController::class, 'dashboard'])->name('dashboard');
     Route::get('/manage/{resource}', [ManagementController::class, 'index']);

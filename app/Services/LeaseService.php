@@ -45,7 +45,7 @@ class LeaseService
         $lease = MailboxLease::findOrFail($id);
         abort_unless(hash_equals($lease->token_hash, hash('sha256', $token)), 403);
 
-        return DB::transaction(function () use ($lease) {
+        $result = DB::transaction(function () use ($lease) {
             $mailbox = Mailbox::whereKey($lease->mailbox_id)->lockForUpdate()->firstOrFail();
             $lease->refresh();
             $authorized = $lease->access_grant_id
@@ -54,11 +54,16 @@ class LeaseService
             $authorized = $authorized && $mailbox->is_active && $mailbox->domain->is_active && $lease->subscription->status === 'active' && $lease->subscription->service->is_active;
             if (! $authorized) {
                 $this->release($lease, $mailbox, 'revoked');
-                abort(403, 'انتهت صلاحية الوصول');
+
+                return ['forbidden' => true];
             }
 
             return $this->state($lease, $mailbox);
         }, 3);
+
+        abort_if(isset($result['forbidden']), 403, 'انتهت صلاحية الوصول');
+
+        return $result;
     }
 
     private function state(MailboxLease $lease, Mailbox $mailbox): array

@@ -198,4 +198,14 @@ class AccountManagementTest extends TestCase
         $user = User::factory()->create(['permissions' => ['users.manage']]);
         $this->actingAs($user)->postJson('/manage/users', ['name' => 'Other', 'email' => 'other@example.org', 'password' => 'test-password-123', 'password_confirmation' => 'test-password-123', 'is_admin' => 1, 'is_active' => 1])->assertForbidden();
     }
+
+    public function test_disabling_mailbox_revokes_and_releases_its_lease(): void
+    {
+        $lease = $this->link();
+        $this->mailbox->update(['is_active' => false]);
+        $this->poll($lease)->assertForbidden();
+        $this->assertNull($this->mailbox->fresh()->active_lease_id);
+        $this->mailbox->update(['is_active' => true]);
+        $this->link();
+    }
 }
