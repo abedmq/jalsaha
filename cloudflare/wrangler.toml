@@ -1,0 +1,17 @@
+name = "jalsaha-email-worker"
+main = "src/index.js"
+compatibility_date = "2026-11-12"
+
+[vars]
+WEBHOOK_URL = "https://YOUR-APP-DOMAIN/api/inbound-email"
+
+[[queues.producers]]
+binding = "EMAIL_QUEUE"
+queue = "jalsaha-email"
+
+[[queues.consumers]]
+queue = "jalsaha-email"
+max_batch_size = 10
+max_batch_timeout = 5
+max_retries = 5
+dead_letter_queue = "jalsaha-email-failed"
